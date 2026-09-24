@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do you still love me? 🌕</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-day: #FFE0E6;
+    --bg-day-2: #FFC2CF;
+    --cream: #FFF7F2;
+    --ink: #4A1220;
+    --ink-soft: #7A3245;
+    --gold: #D4AF37;
+    --gold-dark: #B8932B;
+    --rose: #C23652;
+    --rose-dark: #9E2740;
+    --wine-night: #3B0A17;
+    --wine-night-2: #1F0510;
+    --candle: #FFF3DE;
+  }
+
+  *{ box-sizing: border-box; }
+  html, body{ height: 100%; }
+  body{
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: var(--ink);
+    overflow-x: hidden;
+    position: relative;
+  }
+  :focus-visible{
+    outline: 3px solid var(--gold-dark);
+    outline-offset: 3px;
+  }
+
+  /* falling hearts layer, sits behind all page content */
+  #heartLayer{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .heart-particle{
+    position: absolute;
+    top: -40px;
+    will-change: transform, top;
+    user-select: none;
+  }
+
+  .page{
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    padding: 24px;
+  }
+
+  /* ---------------- PAGE 1 : THE ASK ---------------- */
+  #page1{
+    background: radial-gradient(circle at 20% 20%, var(--bg-day-2), var(--bg-day) 65%);
+    transition: opacity 0.45s ease;
+  }
+
+  .card{
+    background: var(--cream);
+    border-radius: 28px;
+    padding: 56px 44px;
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px -20px rgba(74,18,32,0.28);
+    position: relative;
+    border: 2px solid rgba(74,18,32,0.06);
+    z-index: 2;
+  }
+
+  .flourish{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+  .flourish .line{
+    height: 1px;
+    width: 34px;
+    background: var(--gold);
+    opacity: 0.7;
+  }
+  .flourish span.label{
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+  }
+
+  h1.question{
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+    font-size: clamp(46px, 9vw, 74px);
+    line-height: 1.1;
+    margin: 0 0 36px 0;
+    color: var(--ink);
+  }
+
+  .answers{
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    position: relative;
+    min-height: 76px;
+  }
+
+  .btn{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    padding: 16px 40px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 8px 0 0 rgba(0,0,0,0.12);
+  }
+  .btn:active{ transform: translateY(4px); }
+
+  #yesBtn{
+    background: var(--gold);
+    color: var(--ink);
+    box-shadow: 0 8px 0 0 var(--gold-dark);
+  }
+  #yesBtn:hover{ transform: translateY(-2px); }
+  #yesBtn:active{ transform: translateY(4px); box-shadow: 0 3px 0 0 var(--gold-dark); }
+
+  #noBtn{
+    background: var(--rose);
+    color: white;
+    box-shadow: 0 8px 0 0 var(--rose-dark);
+    z-index: 40;
+  }
+  #noBtn.roaming{
+    position: fixed;
+    transition: top 0.28s cubic-bezier(.2,1.4,.5,1), left 0.28s cubic-bezier(.2,1.4,.5,1);
+  }
+
+  .hint{
+    margin-top: 26px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    opacity: 0.8;
+    font-style: italic;
+  }
+
+  /* confetti (hearts burst) */
+  .confetto{
+    position: fixed;
+    top: -20px;
+    pointer-events: none;
+    z-index: 999;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(110vh) rotate(540deg); opacity: 0.9; }
+  }
+
+  /* ---------------- PAGE 2 : THE LETTER ---------------- */
+  #page2{
+    background: radial-gradient(circle at 30% 15%, var(--wine-night), var(--wine-night-2) 70%);
+    display: none;
+  }
+  #page2.show{ display: flex; }
+
+  .card--night{
+    background: var(--candle);
+    color: var(--ink);
+    max-width: 640px;
+    padding: 52px 44px;
+    border-radius: 24px;
+    text-align: left;
+    box-shadow: 0 0 0 8px rgba(212,175,55,0.08), 0 30px 80px -20px rgba(0,0,0,0.65);
+    position: relative;
+    z-index: 2;
+    max-height: 82vh;
+    overflow-y: auto;
+  }
+
+  .badge{
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--rose);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+  }
+
+  h2.title{
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(34px, 5vw, 46px);
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: var(--rose-dark);
+  }
+
+  p.subline{
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin: 0 0 4px 0;
+  }
+  p.anniv-line{
+    font-family: 'Dancing Script', cursive;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 26px 0;
+  }
+
+  .divider{
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 0 26px 0;
+  }
+
+  .letter-body{
+    font-family: 'Noto Sans Bengali', 'Poppins', sans-serif;
+    font-size: 16.5px;
+    line-height: 2;
+    color: var(--ink);
+  }
+  .letter-body p{
+    margin: 0 0 22px 0;
+    text-align: justify;
+  }
+  .letter-body blockquote{
+    margin: 0 0 22px 0;
+    padding: 6px 0;
+    text-align: center;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--rose-dark);
+    border: none;
+  }
+
+  .treat-row{
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .treat-btn{
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+  .treat-btn:hover{
+    background: var(--ink);
+    color: var(--candle);
+    transform: translateY(-2px);
+  }
+
+  .replay{
+    display: inline-block;
+    margin-top: 30px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    padding: 0;
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--candle);
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 999;
+  }
+  .toast.visible{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #noBtn.roaming{ transition: none; }
+    .heart-particle{ display: none; }
+  }
+
+  @media (max-width: 480px){
+    .card, .card--night{ padding: 38px 22px; }
+    .answers{ gap: 16px; }
+    .btn{ padding: 14px 30px; font-size: 17px; }
+    .card--night{ max-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+
+<div id="heartLayer"></div>
+
+<!-- PAGE 1 -->
+<section class="page" id="page1">
+  <div class="card">
+    <div class="flourish">
+      <span class="line"></span>
+      <span class="label">Happy 1 Year Anniversary, My Love</span>
+      <span class="line"></span>
+    </div>
+    <h1 class="question">Do you still love me?</h1>
+    <div class="answers">
+      <button class="btn" id="yesBtn">YES</button>
+      <button class="btn" id="noBtn">NO</button>
+    </div>
+    <p class="hint">(fair warning — "no" isn't really on the table)</p>
+  </div>
+</section>
+
+<!-- PAGE 2 -->
+<section class="page" id="page2">
+  <div class="card--night">
+    <span class="badge">You said yes 🌕</span>
+    <h2 class="title">Yes, I Love You Bou Jaan 🌕</h2>
+    <p class="subline">1 year of our relationship, a lifetime to go.</p>
+    <p class="anniv-line">Happy anniversary my sona bubu ❤️‍🩹</p>
+    <div class="divider"></div>
+    <div class="letter-body">
+      <p>আমাকে ভালোবাসার বিনিময়ে আমি তোমাকে দুঃখ আর কষ্ট ছাড়া কিছুই দিতে পারিনি। তবুও বিশ্বাস করো - যতটুকু ভালোবাসা তোমাকে দিয়েছি, সেটুকু ছিলো আমার জীবনের সত্যি অনুভূতি। ক্ষমা করে দিও, যদি আমার ভালোবাসা তোমার চোখে জল এনে থাকে। কারণ তোমাকে কষ্ট দেওয়া কখনোই আমার ইচ্ছে ছিলো না, তবুও অজান্তেই হয়তো তোমার জীবনের সবচেয়ে বড় কষ্টের কারণ হয়ে গেছি।</p>
+      <p>আসায় আছি সেই দিনটার -</p>
+      <blockquote>"ভালোবাসা তো এদের মতোই হওয়া উচিত"</blockquote>
+      <p>হাজার ঝড়, হাজার বাধার পরেও যদি আমরা একে অপরের হাতটা এভাবেই ধরে রাখতে পারি, তাহলে হয়তো আমাদের গল্পটাই ভালোবাসার উদাহরণ হয়ে থাকবে।</p>
+    </div>
+    <div class="treat-row">
+      <button class="treat-btn" id="flowerBtn">Send flowers 🌹</button>
+      <button class="treat-btn" id="saveBtn">Save this letter 💌</button>
+    </div>
+    <br>
+    <button class="replay" id="replayBtn">↺ ask again</button>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const page1 = document.getElementById('page1');
+  const page2 = document.getElementById('page2');
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const replayBtn = document.getElementById('replayBtn');
+  const toast = document.getElementById('toast');
+
+  // ---------------- falling hearts background ----------------
+  const heartLayer = document.getElementById('heartLayer');
+  const symbols = ['❤️', '💕', '💖', '🌹'];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function spawnHeart(){
+    if (reduceMotion) return;
+    const el = document.createElement('span');
+    el.className = 'heart-particle';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    const size = 14 + Math.random() * 18;
+    const startX = Math.random() * window.innerWidth;
+    const duration = 9000 + Math.random() * 7000;
+    const sway = 30 + Math.random() * 60;
+    const swayDir = Math.random() < 0.5 ? -1 : 1;
+    const rotateEnd = (Math.random() * 180 - 90);
+    el.style.fontSize = size + 'px';
+    el.style.left = startX + 'px';
+    el.style.opacity = (0.35 + Math.random() * 0.45).toFixed(2);
+    heartLayer.appendChild(el);
+
+    const start = performance.now();
+    function step(now){
+      const t = Math.min(1, (now - start) / duration);
+      const y = t * (window.innerHeight + 80) - 40;
+      const x = startX + Math.sin(t * Math.PI * 2) * sway * swayDir * t;
+      const rot = rotateEnd * t;
+      el.style.transform = `translate(${x - startX}px, ${y}px) rotate(${rot}deg)`;
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.remove();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  if (!reduceMotion) {
+    for (let i = 0; i < 8; i++) setTimeout(spawnHeart, i * 400);
+    setInterval(spawnHeart, 900);
+  }
+
+  // ---- confetti burst on YES ----
+  function burstConfetti(){
+    for(let i = 0; i < 36; i++){
+      const piece = document.createElement('div');
+      piece.className = 'confetto';
+      piece.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.fontSize = (12 + Math.random() * 12) + 'px';
+      piece.style.animationDuration = (1.6 + Math.random() * 1.2) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 3000);
+    }
+  }
+
+  // ---- YES: confetti, then swap pages ----
+  yesBtn.addEventListener('click', () => {
+    burstConfetti();
+    yesBtn.disabled = true;
+    setTimeout(() => {
+      page1.style.opacity = '0';
+      setTimeout(() => {
+        page1.style.display = 'none';
+        page1.style.opacity = '1';
+        page2.classList.add('show');
+        yesBtn.disabled = false;
+      }, 400);
+    }, 450);
+  });
+
+  // ---- NO: jump to a random spot, dodges hover too ----
+  function moveNoButton(){
+    noBtn.classList.add('roaming');
+    const btnW = noBtn.offsetWidth;
+    const btnH = noBtn.offsetHeight;
+    const margin = 20;
+    const maxLeft = window.innerWidth - btnW - margin;
+    const maxTop = window.innerHeight - btnH - margin;
+    const newLeft = margin + Math.random() * Math.max(0, maxLeft - margin);
+    const newTop = margin + Math.random() * Math.max(0, maxTop - margin);
+    noBtn.style.left = newLeft + 'px';
+    noBtn.style.top = newTop + 'px';
+  }
+  noBtn.addEventListener('click', moveNoButton);
+  noBtn.addEventListener('mouseenter', moveNoButton);
+
+  // ---- replay ----
+  replayBtn.addEventListener('click', () => {
+    page2.classList.remove('show');
+    page1.style.display = 'flex';
+    noBtn.classList.remove('roaming');
+    noBtn.style.left = '';
+    noBtn.style.top = '';
+  });
+
+  // ---- bonus buttons ----
+  function showToast(text){
+    toast.textContent = text;
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), 2200);
+  }
+  document.getElementById('flowerBtn').addEventListener('click', () => showToast('Noted 🌹 — go surprise them!'));
+  document.getElementById('saveBtn').addEventListener('click', () => showToast('Ctrl/Cmd + S saves this page as a keepsake 💌'));
+</script>
+
+</body>
+</html>
